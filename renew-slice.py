@@ -17,7 +17,7 @@ __license__ = 'MIT'
 
 
 import argparse
-from datetime import datetime as dt, timedelta as td
+from datetime import datetime as dt
 import plc
 import sys
 
