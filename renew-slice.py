@@ -9,6 +9,18 @@
 """
 renew-slice.py
 Renew a PlanetLab slice.
+
+$ ./renew-slice.py -h
+usage: renew-slice.py [-h] [--version] -u usr -s slice-name
+
+Renew a PlanetLab slice as far into the future as permitted.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  -u usr, --usr usr     User ID.
+  -s slice-name, --slice slice-name
+                        Name of an existing PlanetLab slice.
 """
 
 __author__  = 'Balakrishnan Chandrasekaran <balac@cs.duke.edu>'

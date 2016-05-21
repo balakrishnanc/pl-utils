@@ -11,6 +11,23 @@ populate-slice.py
 Populates slices with two nodes (maximum) from each site. The nodes are
 selected such that the last contact time of the node is no later than a given
 threshold.
+
+$ ./populate-slice.py -h
+usage: populate-slice.py [-h] [--version] -u usr -s slice-name -d staleness
+                         [-n nps]
+
+Renew a PlanetLab slice as far into the future as permitted.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  -u usr, --usr usr     User ID.
+  -s slice-name, --slice slice-name
+                        Name of an existing PlanetLab slice.
+  -d staleness, --days staleness
+                        How stale (in days) the "last contact" time of a node
+                        can be?
+  -n nps, --nps nps     Number of nodes selected per site
 """
 
 __author__  = 'Balakrishnan Chandrasekaran <balac@cs.duke.edu>'
