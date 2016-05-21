@@ -198,6 +198,39 @@ class PLC:
         raise ValueError(u'Failed to renew slice!')
 
 
+    def resize_slice(self, sid, sz):
+        """Adjust slice capacity.
+        """
+        if sz <= 0:
+            raise ValueError(u'Slice size should be positive!')
+
+        if 1 == self._api.UpdateSlice(self._auth, sid,
+                                      {SliceAttribs.max_nodes : sz}):
+            return self.get_slice(sid)
+        raise ValueError(u'Failed to resize slice!')
+
+
+    def add_nodes(self, sid, nodes):
+        """Add nodes to the slice.
+        """
+        if not nodes:
+            raise ValueError(u'Node list cannot be empty!')
+
+        if 1 == self._api.UpdateSlice(self._auth, sid, {'nodes' : nodes}):
+            return self.get_slice(sid)
+        raise ValueError(u'Failed to add nodes to the slice!')
+
+
+    def get_live_nodes(self, fields=None):
+        """Retrieve a list of all live nodes.
+        """
+        if fields is None:
+            fields = Node.reqd_fields()
+        return [Node(n) for n in
+                self._api.GetNodes(self._auth, {NodeAttribs.boot : 'boot'},
+                                   fields)]
+
+
 def get_pwd(usr):
     """Retrieve password associated with the username.
     """
