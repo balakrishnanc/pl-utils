@@ -193,9 +193,12 @@ class PLC:
         else:
             upto = int(to_unix_time(ts))
 
-        if self._api.UpdateSlice(self._auth, sid, {'expires' : upto}) == 1:
-            return self.get_slice(sid)
-        raise ValueError(u'Failed to renew slice!')
+        try:
+            if self._api.UpdateSlice(self._auth, sid, {'expires' : upto}) == 1:
+                return self.get_slice(sid)
+            raise ValueError(u'Failed to renew slice!')
+        except rpc.Fault as e:
+            raise ValueError(u"Failed to renew slice! %s" % e.faultString)
 
 
     def resize_slice(self, sid, sz):
@@ -204,10 +207,13 @@ class PLC:
         if sz <= 0:
             raise ValueError(u'Slice size should be positive!')
 
-        if 1 == self._api.UpdateSlice(self._auth, sid,
-                                      {SliceAttribs.max_nodes : sz}):
-            return self.get_slice(sid)
-        raise ValueError(u'Failed to resize slice!')
+        try:
+            if 1 == self._api.UpdateSlice(self._auth, sid,
+                                          {SliceAttribs.max_nodes : sz}):
+                return self.get_slice(sid)
+            raise ValueError(u'Failed to resize slice!')
+        except rpc.Fault as e:
+            raise ValueError(u"Failed to resize slice! %s" % e.faultString)
 
 
     def add_nodes(self, sid, nodes):
@@ -216,9 +222,13 @@ class PLC:
         if not nodes:
             raise ValueError(u'Node list cannot be empty!')
 
-        if 1 == self._api.UpdateSlice(self._auth, sid, {'nodes' : nodes}):
-            return self.get_slice(sid)
-        raise ValueError(u'Failed to add nodes to the slice!')
+        try:
+            if 1 == self._api.UpdateSlice(self._auth, sid, {'nodes' : nodes}):
+                return self.get_slice(sid)
+            raise ValueError(u'Failed to add nodes to the slice!')
+        except rpc.Fault as e:
+            raise ValueError(u"Failed to add nodes to slice! %s" %
+                             e.faultString)
 
 
     def get_live_nodes(self, fields=None):
