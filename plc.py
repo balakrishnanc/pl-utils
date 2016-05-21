@@ -84,6 +84,59 @@ class Slice:
         return (renew_upto() - self.expires) >= RENEWAL_RESOL
 
 
+NODE_ATTRIBS = {u'node_id'   : u'node_id',
+                u'host'      : u'hostname',
+                u'boot'      : u'boot_state',
+                u'last_seen' : u'last_contact',
+                u'last_boot' : u'last_boot',
+                u'site'      : u'site_id',
+                u'slices'    : u'slice_ids'}
+NodeAttribs = nt(u'NodeAttribs',
+                  NODE_ATTRIBS.keys())(*NODE_ATTRIBS.values())
+
+
+def to_defdict(d):
+    """Wrap in a default dictionary.
+    """
+    return defdict(lambda: None, d)
+
+
+class Node:
+    """Node information.
+    """
+    __slots__ = NODE_ATTRIBS.keys()
+
+    def __init__(self, info):
+        """Initialize node with data provided.
+        """
+        info           = to_defdict(info)
+        self.node_id   = info[NodeAttribs.node_id]
+        self.host      = info[NodeAttribs.host]
+        self.boot      = info[NodeAttribs.boot]
+        self.last_seen = info[NodeAttribs.last_seen]
+        self.last_boot = info[NodeAttribs.last_boot]
+        self.site      = info[NodeAttribs.site]
+        self.slices    = info[NodeAttribs.slices]
+
+        if self.last_seen:
+            self.last_seen = dt.utcfromtimestamp(self.last_seen)
+
+
+    def was_seen_after(self, ts):
+        """Check if node's last seen time was after the given timestamp.
+        """
+        return self.last_seen and (self.last_seen >= ts)
+
+
+    @classmethod
+    def reqd_fields(self):
+        return (NodeAttribs.node_id,
+                NodeAttribs.host,
+                NodeAttribs.boot,
+                NodeAttribs.last_seen,
+                NodeAttribs.site)
+
+
 class PLC:
     """PlanetLab RPC Interface.
     """
