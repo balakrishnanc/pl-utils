@@ -16,6 +16,7 @@ __version__ = '1.0'
 __license__ = 'MIT'
 
 
+from collections import namedtuple as nt, defaultdict as defdict
 from datetime import datetime as dt, timedelta as td
 import getpass
 import xmlrpclib as rpc
@@ -45,20 +46,36 @@ def renew_upto(days=RENEWAL_CAP):
     return dt.today() + days
 
 
+SLICE_ATTRIBS = {u'name'      : u'name',
+                 u'slice_id'  : u'slice_id',
+                 u'expires'   : u'expires',
+                 u'site'      : u'site_id',
+                 u'max_nodes' : u'max_nodes',
+                 u'nodes'     : u'node_ids',
+                 u'users'     : u'person_ids',
+                 u'desc'      : u'description',
+                 u'tags'      : u'slice_tag_ids'}
+SliceAttribs = nt(u'SliceAttribs',
+                  SLICE_ATTRIBS.keys())(*SLICE_ATTRIBS.values())
+
+
 class Slice:
     """Slice information.
     """
+    __slots__ = SLICE_ATTRIBS.keys()
 
     def __init__(self, info):
-        self.name = info[u'name']
-        self.slice_id = info[u'slice_id']
-        self.site_id = info[u'site_id']
-        self.expires = dt.utcfromtimestamp(info[u'expires'])
-        self.max_nodes = info[u'max_nodes']
-        self.nodes = info[u'node_ids']
-        self.users = info[u'person_ids']
-        self.desc = info[u'description']
-        self.tags = info[u'slice_tag_ids']
+        """Initialize slice with data provided.
+        """
+        self.name      = info[SliceAttribs.name]
+        self.slice_id  = info[SliceAttribs.slice_id]
+        self.expires   = dt.utcfromtimestamp(info[SliceAttribs.expires])
+        self.site      = info[SliceAttribs.site]
+        self.max_nodes = info[SliceAttribs.max_nodes]
+        self.nodes     = info[SliceAttribs.nodes]
+        self.users     = info[SliceAttribs.users]
+        self.desc      = info[SliceAttribs.desc]
+        self.tags      = info[SliceAttribs.tags]
 
 
     def can_renew(self):
