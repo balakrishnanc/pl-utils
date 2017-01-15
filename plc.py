@@ -26,7 +26,9 @@ import xmlrpclib as rpc
 PLC_XML_RPC_URL = 'https://www.planet-lab.org/PLCAPI/'
 
 # Limit on how far into the future the PlanetLab slice can be renewed.
-RENEWAL_CAP = td(weeks=8)
+# NOTE: There seems to a bug that causes the date when rounded off to an integer
+# to go over the allowed renewal time.
+RENEWAL_CAP = td(weeks=8, hours=-1)
 # Renewal resolution.
 RENEWAL_RESOL = td(days=1)
 
