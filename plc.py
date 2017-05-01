@@ -19,6 +19,7 @@ __license__ = 'MIT'
 from collections import namedtuple as nt, defaultdict as defdict
 from datetime import datetime as dt, timedelta as td
 import getpass
+from pytz import utc
 import xmlrpclib as rpc
 
 
@@ -26,13 +27,11 @@ import xmlrpclib as rpc
 PLC_XML_RPC_URL = 'https://www.planet-lab.org/PLCAPI/'
 
 # Limit on how far into the future the PlanetLab slice can be renewed.
-# NOTE: There seems to a bug that causes the date when rounded off to an integer
-# to go over the allowed renewal time.
-RENEWAL_CAP = td(weeks=8, hours=-1)
+RENEWAL_CAP = td(weeks=7, days=6, hours=12)
 # Renewal resolution.
 RENEWAL_RESOL = td(days=1)
 
-UNIX_EPOCH = dt(1970, 1, 1)
+UNIX_EPOCH = utc.localize(dt(1970, 1, 1))
 
 
 def to_unix_time(ts):
@@ -45,7 +44,7 @@ def to_unix_time(ts):
 def renew_upto(days=RENEWAL_CAP):
     """Get the maximum renewal time in the future.
     """
-    return dt.today() + days
+    return utc.localize(dt.today()) + days
 
 
 SLICE_ATTRIBS = {u'name'      : u'name',
@@ -71,7 +70,8 @@ class Slice:
         """
         self.name      = info[SliceAttribs.name]
         self.slice_id  = info[SliceAttribs.slice_id]
-        self.expires   = dt.utcfromtimestamp(info[SliceAttribs.expires])
+        _expiry = dt.utcfromtimestamp(info[SliceAttribs.expires])
+        self.expires   = utc.localize(_expiry)
         self.site      = info[SliceAttribs.site]
         self.max_nodes = info[SliceAttribs.max_nodes]
         self.nodes     = info[SliceAttribs.nodes]
