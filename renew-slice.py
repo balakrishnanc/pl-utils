@@ -31,6 +31,7 @@ __license__ = 'MIT'
 import argparse
 from datetime import datetime as dt
 import plc
+from pytz import utc
 import sys
 
 
@@ -42,7 +43,7 @@ def main(args):
         print(u"- slice '%s(%d)' expires on %s" %
               (s.name, s.slice_id, dt.strftime(s.expires, "%b %d, %Y %T")))
 
-        if not s.can_renew:
+        if not s.can_renew():
             print(u"- slice cannot be renewed at this time!")
             return
 
